@@ -42,6 +42,7 @@
   "dropbox": "Dropbox",
   "gdrive": "Google Drive",
   "onedrive": "OneDrive",
+  "azure": "Azure",
   "menuAllItems": "Alle Einträge",
   "menuColors": "Farben",
   "menuTrash": "Papierkorb",

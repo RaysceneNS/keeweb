@@ -84,7 +84,11 @@ const DefaultAppSettings = {
 
     onedrive: true, // enable OneDrive integration
     onedriveClientId: null, // custom OneDrive client id
-    onedriveClientSecret: null // custom OneDrive client secret
+    onedriveClientSecret: null, // custom OneDrive client secret
+
+    azure: true, // enable Azure integration
+    azureClientId: null, // custom Azure client id
+    azureClientSecret: null // custom Azure client secret
 };
 
 export { DefaultAppSettings };

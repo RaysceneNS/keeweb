@@ -43,6 +43,7 @@
     "dropbox": "Dropbox",
     "gdrive": "Google Drive",
     "onedrive": "OneDrive",
+    "azure": "Azure",
 
     "menuAllItems": "All Items",
     "menuColors": "Colors",
