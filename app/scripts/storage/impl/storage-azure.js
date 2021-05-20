@@ -18,7 +18,8 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Load', path);
             const ts = this.logger.ts();
-            const url = new URL(path, this.appSettings.azureBlobContainer).href;
+            const url = this._blobStoreUrl(path);
+            this.logger.debug('Load url', url);
             this._xhr({
                 url,
                 headers: {
@@ -46,7 +47,7 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Stat', path);
             const ts = this.logger.ts();
-            const url = new URL(path, this.appSettings.azureBlobContainer).href;
+            const url = this._blobStoreUrl(path);
             this._xhr({
                 url,
                 headers: {
@@ -82,7 +83,7 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Save', path, rev);
             const ts = this.logger.ts();
-            const url = new URL(path, this.appSettings.azureBlobContainer).href;
+            const url = this._blobStoreUrl(path);
             this._xhr({
                 url,
                 headers: {
@@ -128,8 +129,8 @@ class StorageAzure extends StorageBase {
             const ts = this.logger.ts();
             const isRoot = !dir || dir.length === 0;
             const url = isRoot
-                ? new URL('?comp=list', this.appSettings.azureBlobContainer).href
-                : new URL(`${dir}?restype=container&comp=list`, this.appSettings.azureBlobContainer).href;
+                ? this._blobStoreUrl('?restype=container&comp=list')
+                : this._blobStoreUrl(`${dir}?restype=container&comp=list`);
 
             this._xhr({
                 url,
@@ -144,18 +145,28 @@ class StorageAzure extends StorageBase {
                         return callback && callback('list error');
                     }
                     const fileList = [];
-                    response.documentElement
-                        .querySelectorAll(isRoot ? 'Container' : 'Blob')
-                        .forEach((blob) => {
-                            const name = blob.getElementsByTagName('Name')[0].textContent;
-                            const etag = blob.getElementsByTagName('Etag')[0].textContent;
-                            fileList.push({
-                                path: isRoot ? name : dir + '/' + name,
-                                name,
-                                dir: isRoot,
-                                rev: etag
-                            });
+                    // treat containers as directories
+                    response.documentElement.querySelectorAll('Container').forEach((blob) => {
+                        const name = blob.getElementsByTagName('Name')[0].textContent;
+                        const etag = blob.getElementsByTagName('Etag')[0].textContent;
+                        fileList.push({
+                            path: name,
+                            name,
+                            dir: true,
+                            rev: etag
                         });
+                    });
+                    // treat blobs as files
+                    response.documentElement.querySelectorAll('Blob').forEach((blob) => {
+                        const name = blob.getElementsByTagName('Name')[0].textContent;
+                        const etag = blob.getElementsByTagName('Etag')[0].textContent;
+                        fileList.push({
+                            path: isRoot ? name : dir + '/' + name,
+                            name,
+                            dir: false,
+                            rev: etag
+                        });
+                    });
                     this.logger.debug('Listed', this.logger.ts(ts), fileList);
                     return callback && callback(null, fileList);
                 },
@@ -170,7 +181,7 @@ class StorageAzure extends StorageBase {
     remove(path, callback) {
         this.logger.debug('Remove', path);
         const ts = this.logger.ts();
-        const url = new URL(path, this.appSettings.azureBlobContainer).href;
+        const url = this._blobStoreUrl(path);
         this._xhr({
             url,
             headers: {
@@ -194,16 +205,19 @@ class StorageAzure extends StorageBase {
         this._oauthRevokeToken();
     }
 
+    _blobStoreUrl(path) {
+        const basePath = new URL(this.appSettings.azureBlobContainer).toString();
+        return new URL(path, basePath).toString();
+    }
+
     _getOAuthConfig() {
         const clientId = this.appSettings.azureClientId;
-        const clientSecret = this.appSettings.azureClientSecret;
         const tenantid = this.appSettings.azureTenantId;
         return {
             url: `https://login.microsoftonline.com/${tenantid}/oauth2/v2.0/authorize`,
             tokenUrl: `https://login.microsoftonline.com/${tenantid}/oauth2/v2.0/token`,
             scope: 'https://storage.azure.com/user_impersonation',
             clientId,
-            clientSecret,
             pkce: true,
             width: 600,
             height: 500
