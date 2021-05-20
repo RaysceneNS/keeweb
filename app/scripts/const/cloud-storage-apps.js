@@ -37,17 +37,4 @@ const OneDriveApps = {
     }
 };
 
-const AzureApps = {
-    Local: {
-        id: '7bbf442b-89d7-4314-bee1-c38e4b78aaec'
-    },
-    Production: {
-        id: null
-    },
-    Desktop: {
-        id: null,
-        secret: null
-    }
-};
-
-export { DropboxApps, GDriveApps, OneDriveApps, AzureApps };
+export { DropboxApps, GDriveApps, OneDriveApps };

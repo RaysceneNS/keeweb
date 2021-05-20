@@ -1,15 +1,11 @@
 /* eslint-disable no-console */
 import { StorageBase } from 'storage/storage-base';
-import { AzureApps } from 'const/cloud-storage-apps';
-import { Features } from 'util/features';
 
 class StorageAzure extends StorageBase {
     name = 'azure';
     enabled = true;
     uipos = 50;
     icon = 'cube';
-
-    _baseUrl = 'https://fskeepasstest.blob.core.windows.net/';
 
     getPathForName(fileName) {
         return '/' + fileName + '.kdbx';
@@ -22,7 +18,7 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Load', path);
             const ts = this.logger.ts();
-            const url = this._baseUrl + path;
+            const url = new URL(path, this.appSettings.azureBlobContainer).href;
             this._xhr({
                 url,
                 headers: {
@@ -50,7 +46,7 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Stat', path);
             const ts = this.logger.ts();
-            const url = this._baseUrl + path;
+            const url = new URL(path, this.appSettings.azureBlobContainer).href;
             this._xhr({
                 url,
                 headers: {
@@ -86,7 +82,7 @@ class StorageAzure extends StorageBase {
             }
             this.logger.debug('Save', path, rev);
             const ts = this.logger.ts();
-            const url = this._baseUrl + path;
+            const url = new URL(path, this.appSettings.azureBlobContainer).href;
             this._xhr({
                 url,
                 headers: {
@@ -132,8 +128,8 @@ class StorageAzure extends StorageBase {
             const ts = this.logger.ts();
             const isRoot = !dir || dir.length === 0;
             const url = isRoot
-                ? this._baseUrl + '?comp=list'
-                : this._baseUrl + `${dir}?restype=container&comp=list`;
+                ? new URL('?comp=list', this.appSettings.azureBlobContainer).href
+                : new URL(`${dir}?restype=container&comp=list`, this.appSettings.azureBlobContainer).href;
 
             this._xhr({
                 url,
@@ -174,7 +170,7 @@ class StorageAzure extends StorageBase {
     remove(path, callback) {
         this.logger.debug('Remove', path);
         const ts = this.logger.ts();
-        const url = this._baseUrl + path;
+        const url = new URL(path, this.appSettings.azureBlobContainer).href;
         this._xhr({
             url,
             headers: {
@@ -199,23 +195,12 @@ class StorageAzure extends StorageBase {
     }
 
     _getOAuthConfig() {
-        let clientId = this.appSettings.azureClientId;
-        let clientSecret = this.appSettings.azureClientSecret;
-        if (!clientId) {
-            if (Features.isDesktop) {
-                ({ id: clientId, secret: clientSecret } = AzureApps.Desktop);
-            } else if (Features.isLocal) {
-                ({ id: clientId, secret: clientSecret } = AzureApps.Local);
-            } else {
-                ({ id: clientId, secret: clientSecret } = AzureApps.Production);
-            }
-        }
-
+        const clientId = this.appSettings.azureClientId;
+        const clientSecret = this.appSettings.azureClientSecret;
+        const tenantid = this.appSettings.azureTenantId;
         return {
-            url:
-                'https://login.microsoftonline.com/3c48f4df-462c-4439-899d-9ed41948d939/oauth2/v2.0/authorize',
-            tokenUrl:
-                'https://login.microsoftonline.com/3c48f4df-462c-4439-899d-9ed41948d939/oauth2/v2.0/token',
+            url: `https://login.microsoftonline.com/${tenantid}/oauth2/v2.0/authorize`,
+            tokenUrl: `https://login.microsoftonline.com/${tenantid}/oauth2/v2.0/token`,
             scope: 'https://storage.azure.com/user_impersonation',
             clientId,
             clientSecret,

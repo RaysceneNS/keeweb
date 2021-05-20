@@ -87,8 +87,9 @@ const DefaultAppSettings = {
     onedriveClientSecret: null, // custom OneDrive client secret
 
     azure: true, // enable Azure integration
-    azureClientId: null, // custom Azure client id
-    azureClientSecret: null // custom Azure client secret
+    azureClientId: null, // Azure client id
+    azureTenantId: null, // Azure tenant id
+    azureBlobContainer: null // Azure blob container url
 };
 
 export { DefaultAppSettings };
