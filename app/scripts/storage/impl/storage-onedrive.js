@@ -221,19 +221,31 @@ class StorageOneDrive extends StorageBase {
     _getOAuthConfig() {
         let clientId = this.appSettings.onedriveClientId;
         let clientSecret = this.appSettings.onedriveClientSecret;
+        let tenant = this.appSettings.onedriveTenantId;
+
         if (!clientId) {
             if (Features.isDesktop) {
-                ({ id: clientId, secret: clientSecret } = OneDriveApps.Desktop);
+                ({ id: clientId, secret: clientSecret, tenantId: tenant } = OneDriveApps.Desktop);
             } else if (Features.isLocal) {
-                ({ id: clientId, secret: clientSecret } = OneDriveApps.Local);
+                ({ id: clientId, secret: clientSecret, tenantId: tenant } = OneDriveApps.Local);
             } else {
-                ({ id: clientId, secret: clientSecret } = OneDriveApps.Production);
+                ({
+                    id: clientId,
+                    secret: clientSecret,
+                    tenantId: tenant
+                } = OneDriveApps.Production);
             }
         }
+        tenant = tenant || 'common';
+
+        let scope = 'files.readwrite';
+        if (!this.appSettings.shortLivedStorageToken) {
+            scope += ' offline_access';
+        }
         return {
-            url: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-            tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-            scope: 'files.readwrite offline_access',
+            url: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`,
+            tokenUrl: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
+            scope,
             clientId,
             clientSecret,
             pkce: true,

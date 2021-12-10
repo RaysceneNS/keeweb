@@ -5,6 +5,7 @@ import { StorageFile } from 'storage/impl/storage-file';
 import { StorageFileCache } from 'storage/impl/storage-file-cache';
 import { StorageGDrive } from 'storage/impl/storage-gdrive';
 import { StorageOneDrive } from 'storage/impl/storage-onedrive';
+import { StorageTeams } from 'storage/impl/storage-teams';
 import { StorageAzure } from 'storage/impl/storage-azure';
 import { StorageWebDav } from 'storage/impl/storage-webdav';
 import { createOAuthSession } from 'storage/pkce';
@@ -18,8 +19,9 @@ const ThirdPartyStorage = {
     dropbox: new StorageDropbox(),
     gdrive: new StorageGDrive(),
     onedrive: new StorageOneDrive(),
-    webdav: new StorageWebDav(),
+    msteams: new StorageTeams(),
     azure: new StorageAzure()
+    webdav: new StorageWebDav()
 };
 
 const Storage = BuiltInStorage;
