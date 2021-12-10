@@ -22,14 +22,10 @@ jobs:
       - run: npm install
       
       - name: config env
-        run: |
-          printf "%s\r\n" "$KW_CONFIG_FILE" > /home/runner/work/keeweb/keeweb/app/scripts/const/default-app-settings.js
-        shell: bash
-        env:
-          KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
+        run: echo ${{ secrets.KW_CONFIG }} | base64 -d > app/scripts/const/default-app-settings.js
       
       - name: file output
-        run: cat /home/runner/work/keeweb/keeweb/app/scripts/const/default-app-settings.js
+        run: cat app/scripts/const/default-app-settings.js
       
       - run: npm run start
       
