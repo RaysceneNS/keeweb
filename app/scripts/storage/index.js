@@ -20,7 +20,7 @@ const ThirdPartyStorage = {
     gdrive: new StorageGDrive(),
     onedrive: new StorageOneDrive(),
     msteams: new StorageTeams(),
-    azure: new StorageAzure()
+    azure: new StorageAzure(),
     webdav: new StorageWebDav()
 };
 
