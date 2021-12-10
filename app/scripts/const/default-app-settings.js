@@ -90,7 +90,7 @@ const DefaultAppSettings = {
     azure: true, // enable Azure integration
     azureClientId: null, // Azure client id
     azureTenantId: null, // Azure tenant id
-    azureBlobContainer: null // Azure blob container url
+    azureBlobContainer: null, // Azure blob container url
 
     msteams: false, // enable Microsoft Teams integration
     msteamsClientId: null, // custom Microsoft Teams client id
