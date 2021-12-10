@@ -23,10 +23,13 @@ jobs:
       
       - name: config env
         run: |
-          printf "$KW_CONFIG_FILE" > /app/scripts/const/default-app-settings.js
+          printf "%s\r\n" "$KW_CONFIG_FILE" > /app/scripts/const/default-app-settings.js
         shell: bash
         env:
           KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
+      
+      - name: file output
+        run: cat /app/scripts/const/default-app-settings.js
       
       - run: npm run start
       
