@@ -20,6 +20,13 @@ jobs:
           submodules: true
       - run: npm install
       - run: npm run start
+      - name: config env
+        run: |
+          echo $KW_CONFIG_FILE >> dist/kw-config.json
+          cat dist/kw-config.json
+        shell: bash
+        env:
+          KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
