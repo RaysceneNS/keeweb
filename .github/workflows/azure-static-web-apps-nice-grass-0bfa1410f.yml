@@ -21,12 +21,14 @@ jobs:
           
       - run: npm install
       
-      - name: config env
-        run: echo ${{ secrets.KW_CONFIG }} | base64 -d > app/scripts/const/default-app-settings.js
-      
-      - name: file output
-        run: cat app/scripts/const/default-app-settings.js
-      
+      - name: Default configuration from secret 
+        id: write_file
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: 'default-app-settings.js'
+          fileDir: './app/scripts/const/'
+          encodedString: ${{ secrets.KW_CONFIG }}
+                
       - run: npm run start
       
       - name: Deploy
