@@ -22,11 +22,7 @@ jobs:
       - run: npm install
       
       - name: config env
-        run: |
-          echo $KW_CONFIG_FILE >> app/scripts/const/default-app-settings.js
-        shell: bash
-        env:
-          KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
+        run: echo ${{secrets.KW_CONFIG}} > app/scripts/const/default-app-settings.js
           
       - run: npm run start
       
