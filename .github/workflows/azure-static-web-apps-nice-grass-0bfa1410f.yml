@@ -23,7 +23,7 @@ jobs:
       
       - name: config env
         run: |
-          printf "$KW_CONFIG_FILE" /app/scripts/const/default-app-settings.js
+          printf "$KW_CONFIG_FILE" > /app/scripts/const/default-app-settings.js
         shell: bash
         env:
           KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
