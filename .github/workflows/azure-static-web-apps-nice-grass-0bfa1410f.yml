@@ -18,15 +18,18 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+          
       - run: npm install
-      - run: npm run start
+      
       - name: config env
         run: |
-          echo $KW_CONFIG_FILE >> dist/kw-config.json
-          cat dist/kw-config.json
+          echo $KW_CONFIG_FILE >> app/scripts/const/default-app-settings.js
         shell: bash
         env:
           KW_CONFIG_FILE : ${{secrets.KW_CONFIG}}
+          
+      - run: npm run start
+      
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
